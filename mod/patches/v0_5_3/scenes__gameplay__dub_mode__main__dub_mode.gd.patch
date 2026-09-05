@@ -1,0 +1,63 @@
+@@ -18,2 +18,7 @@ const DUB_RECORD_PREFIX: String = "_dubrecord_"
+ @onready var btn_goto_cinema: ButtonCV = %BtnGotoCinema
++@onready var chk_mic_replay: CheckBox = %ChkMicReplay
++@onready var slider_tracks_mixin: HSlider = %TracksMixinSlider
++@onready var replay_settings: HBoxContainer = %ReplaySettings
++@onready var icon_mixin_left: TextureRect = %IconMixinLeft
++@onready var icon_mixin_right: TextureRect = %IconMixinRight
+ 
+@@ -75,2 +80,6 @@ var unperformance_array: Array[OmniClipMemberInstance]
+ 
++var _icon_backing: Texture2D
++var _icon_voicelines: Texture2D
++
++
+ 
+@@ -105,2 +114,28 @@ func _update_from_difficulty_toggles() -> void :
+ 	player_backing_track.volume_linear = float( !Profile.dub_mode_mute_backing_track) * float(performing_finished)
++	replay_settings.visible = Profile.dub_mode_replay_mod_enabled
++	_apply_mixin_icons_display()
++
++
++func _apply_mixin_icons_display() -> void :
++	if !_icon_backing:
++		_icon_backing = icon_mixin_left.texture
++		_icon_voicelines = icon_mixin_right.texture
++	var inverted: bool = Profile.dub_mode_invert_tracks_mixin_display
++	icon_mixin_left.texture = _icon_voicelines if inverted else _icon_backing
++	icon_mixin_right.texture = _icon_backing if inverted else _icon_voicelines
++
++
++func _apply_replay_mix(_signal_arg: Variant = null) -> void :
++	var backing_vs_vclip: float = slider_tracks_mixin.value / slider_tracks_mixin.max_value
++	if Profile.dub_mode_invert_tracks_mixin_display: backing_vs_vclip = 1.0 - backing_vs_vclip
++	var angle: float = backing_vs_vclip * (PI / 2.0)
++	if player_backing_track.stream: player_backing_track.volume_linear = cos(angle)
++	audio_interface_manager.audio_player_vclip.volume_linear = sin(angle)
++	audio_interface_manager.audio_player_pecho.volume_linear = float(chk_mic_replay.button_pressed)
++func _current_clip_backing_track_timestamp(index: int = clip_index) -> float :
++	var timestamps: PackedFloat32Array = performance_array[index].shared_omniclip.dub_timestamps
++	if timestamps.is_empty(): return 0.0
++	var earliest: float = timestamps[0]
++	for timestamp: float in timestamps: earliest = minf(earliest, timestamp)
++	return earliest
+ 
+@@ -137,2 +172,4 @@ func _prep_omniclip(index: int = clip_index) -> void :
+ 	vclip_displayer.texture = active_clip.clip_texture
++	chk_mic_replay.button_pressed = Profile.dub_mode_default_mic_on_replay
++	slider_tracks_mixin.value = Profile.dub_mode_default_tracks_mixin
+ func _engage_omniclip(index: int = clip_index) -> void :
+@@ -160,2 +197,9 @@ func _hear_again() -> void :
+ 	audio_interface_manager.again()
++	if Profile.dub_mode_replay_mod_enabled:
++		if !player_backing_track.stream: player_backing_track.stream = resource.backing_track
++		if player_backing_track.stream: player_backing_track.play(_current_clip_backing_track_timestamp())
++		var current_recording: AudioStreamWAV = MicrophoneService.get_recording() if turn_record_attempts else null
++		if current_recording: audio_interface_manager.audio_player_pecho.stream = current_recording;audio_interface_manager.audio_player_pecho.play()
++		else: audio_interface_manager.audio_player_pecho.stop()
++		_apply_replay_mix()
+ 	btn_stop_listening.show();btn_hear_again.hide()
+@@ -165,2 +209,3 @@ func _end_again() -> void :
+ 	audio_interface_manager.idle()
++	if player_backing_track.playing: player_backing_track.stop()
+ 	_buttons_toggle_array(previous_buttons_state)

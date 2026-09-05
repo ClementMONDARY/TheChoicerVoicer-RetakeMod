@@ -1,0 +1,33 @@
+installer log, started 2026-09-05 02:08:59
+python 3.14.6 on win32
+
+Looking for your copy of the game...
+No copy found automatically.
+
+Drag your game exe onto this window and press Enter,
+or paste the full path to it.
+
+Game exe: [warn] TCV 0.5.3 Multiplayer.exe is not a build this mod has been tested against.
+        Trying anyway. Expect a clear error shortly if it is not 0.5.3.
+[1/5] getting gdRE Tools
+[cache] already have gdre-v2.6.3-windows.zip
+[2/5] decompiling your copy of the game
+[3/5] applying the Retake mod
+[mod] project reports version 0.5.2
+[mod] repaired 18 decompiler node-path artifacts
+[warn] no patch set is named for version 0.5.2; trying all 1 of them (v0_5_3)
+[mod] patched 4 game files
+[mod] added 10 new files (settings UI, icons)
+[mod] registered the export preset
+[4/5] getting Godot and export templates
+[mod] engine version signals disagree: 4.3-stable (a version string in the decompiler's output); 4.4.1-stable (project.godot says it was saved by Godot 4.4); 4.4.1-stable (the game's own scripts use typed dictionaries, which needs Godot 4.4) -- taking the highest, 4.4.1-stable
+[build] trying Godot 4.4.1-stable (project.godot says it was saved by Godot 4.4)
+[cache] already have godot-4.4.1-stable-windows.zip
+[skip] export template already installed in C:\Users\cleme\AppData\Roaming\Godot\export_templates\4.4.1.stable
+[build] importing project assets (this takes a minute)
+[build] Godot 4.4.1-stable reads this game fine
+[5/5] building with Godot 4.4.1-stable
+[build] exporting to TheChoicerVoicer-Retake.exe
+
+Done -> C:\Users\cleme\Documents\Code\Godot\TCV-ReplayMod-Distribution\TheChoicerVoicer-Retake.exe  (210 MB)
+Launch it and open Settings -> Mods to find the Retake options.

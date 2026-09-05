@@ -1,0 +1,174 @@
+[gd_scene load_steps=4 format=3 uid="uid://di26rmp7udj17"]
+
+[ext_resource type="Script" uid="uid://cb0i1cpgre3wf" path="res://scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd" id="1_cdg14"]
+[ext_resource type="Texture2D" uid="uid://b01aacla78t8y" path="res://addons/godot-easy-icons/icons/streamline/screen-1.svg" id="2_n1bvh"]
+[ext_resource type="Texture2D" uid="uid://cqovavdmwt48c" path="res://addons/godot-easy-icons/icons/@icons/speaker.svg" id="3_27gud"]
+
+[node name="RetakeModSettingsBlock" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 34.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cdg14")
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ChkEnableRetakeMod" type="CheckButton" parent="HBoxContainer4"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+
+[node name="Label" type="Label" parent="HBoxContainer4"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Retake"
+
+[node name="Label2" type="Label" parent="HBoxContainer4"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 12
+text = "[Nemeco_]"
+
+[node name="Control" type="Control" parent="HBoxContainer4"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="BtnResetValues" type="Button" parent="HBoxContainer4"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset values"
+
+[node name="HSeparator4" type="HSeparator" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ChkEnableDefaultMicOnReplay" type="CheckButton" parent="HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Control" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Include your recorded take in replay by default"
+
+[node name="Label2" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 12
+text = "[Applied automatically at the start of every new clip]"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ChkInvertMixinSlider" type="CheckButton" parent="HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Control" type="Control" parent="HBoxContainer2"]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer2"]
+layout_mode = 2
+text = "Swap Backing track / Voicelines sides"
+
+[node name="Control2" type="Control" parent="HBoxContainer2"]
+custom_minimum_size = Vector2(47, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer2"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 12
+text = "[Visual only, doesn't change how the mix actually sounds]"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="HBoxContainer3"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer3"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer3/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer3/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Backing/voice mix default value"
+
+[node name="Control" type="Control" parent="HBoxContainer3/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(211, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer3/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 12
+text = "[Applied automatically at the start of every new clip]"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer3/VBoxContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+
+[node name="LblMixinLeft" type="Label" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Backing track"
+horizontal_alignment = 2
+
+[node name="IconMixinLeft" type="TextureRect" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_n1bvh")
+expand_mode = 1
+
+[node name="SliderTracksMixinDefault" type="HSlider" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+step = 25.0
+value = 100.0
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="IconMixinRight" type="TextureRect" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_27gud")
+expand_mode = 1
+
+[node name="LblMixinRight" type="Label" parent="HBoxContainer3/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Voicelines"
+
+[connection signal="toggled" from="HBoxContainer4/ChkEnableRetakeMod" to="." method="_on_chk_enable_retake_mod_toggled"]

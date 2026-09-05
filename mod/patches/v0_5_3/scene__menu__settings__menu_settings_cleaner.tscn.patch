@@ -1,0 +1,94 @@
+@@ -1,4 +1,4 @@
+-[gd_scene load_steps=42 format=3 uid="uid://c6xuipdb7njpw"]
++[gd_scene load_steps=44 format=3 uid="uid://c6xuipdb7njpw"]
+ 
+ [ext_resource type="Script" uid="uid://b44xsa0u1xj0m" path="res://scene/menu/settings/menu_settings_cleaner.gd" id="1_oc47o"]
+ [ext_resource type="Script" uid="uid://cgbfs5yb7iy60" path="res://resource/menu_data.gd" id="2_lpnjs"]
+@@ -23,6 +23,7 @@
+ [ext_resource type="PackedScene" uid="uid://crdl7rayvgk2t" path="res://scenes/nav_specific/settings_blocks/microphone_settings_block.tscn" id="18_p33ns"]
+ [ext_resource type="PackedScene" uid="uid://bsbarkrtoybwb" path="res://scenes/nav_specific/settings_blocks/twitch_settings_block.tscn" id="20_enq51"]
+ [ext_resource type="PackedScene" uid="uid://d4e3weu14db0p" path="res://scenes/nav_specific/settings_blocks/debug_settings_block.tscn" id="23_06o3a"]
++[ext_resource type="PackedScene" uid="uid://byxtu8pqf2h3w" path="res://scenes/nav_specific/settings_blocks/mods_settings_block.tscn" id="23_ydt62"]
+ 
+ [sub_resource type="Resource" id="Resource_hm04h"]
+ script = ExtResource("3_e1537")
+@@ -133,6 +134,17 @@ shader_parameter/center_size_y = 0.159
+ shader_parameter/center_falloff = 1.857
+ shader_parameter/center_strength = 0.704
+ 
++[sub_resource type="ShaderMaterial" id="ShaderMaterial_ydt62"]
++resource_local_to_scene = true
++shader = ExtResource("7_1c1d8")
++shader_parameter/palette = SubResource("GradientTexture1D_huftt")
++shader_parameter/node_size = Vector2(1152, 648)
++shader_parameter/shade_symmetry = 5.0
++shader_parameter/center_size_x = 0.086
++shader_parameter/center_size_y = 0.159
++shader_parameter/center_falloff = 1.857
++shader_parameter/center_strength = 0.704
++
+ [sub_resource type="ShaderMaterial" id="ShaderMaterial_22jd7"]
+ shader = ExtResource("3_40nlv")
+ shader_parameter/palette = ExtResource("4_5csvs")
+@@ -380,6 +392,23 @@ anchor_bottom = 1.0
+ grow_horizontal = 2
+ grow_vertical = 2
+ theme_override_fonts/font = ExtResource("8_piy71")
++text = "Mods"
++horizontal_alignment = 1
++vertical_alignment = 1
++
++[node name="ButtonCVSmall9" parent="MarginContainer/ArrayPageSelection" instance=ExtResource("6_002t0")]
++material = SubResource("ShaderMaterial_ydt62")
++custom_minimum_size = Vector2(160, 48)
++layout_mode = 2
++
++[node name="Label" type="Label" parent="MarginContainer/ArrayPageSelection/ButtonCVSmall9"]
++layout_mode = 1
++anchors_preset = 15
++anchor_right = 1.0
++anchor_bottom = 1.0
++grow_horizontal = 2
++grow_vertical = 2
++theme_override_fonts/font = ExtResource("8_piy71")
+ text = "[Debug]"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+@@ -649,7 +678,37 @@ horizontal_scroll_mode = 0
+ [node name="TwitchSettingsBlock" parent="Border/ColorRect/SettingsPages/PageTwitchIntegration/TwitchSettings/ScrollContainer" instance=ExtResource("20_enq51")]
+ layout_mode = 2
+ 
++[node name="ModsPreferences" type="Control" parent="Border/ColorRect/SettingsPages"]
++layout_mode = 2
++
++[node name="ModsSettings" type="VBoxContainer" parent="Border/ColorRect/SettingsPages/ModsPreferences"]
++custom_minimum_size = Vector2(346, 0)
++layout_mode = 1
++anchors_preset = 15
++anchor_right = 1.0
++anchor_bottom = 1.0
++grow_horizontal = 2
++grow_vertical = 2
++theme_override_constants/separation = 8
++
++[node name="Label" type="Label" parent="Border/ColorRect/SettingsPages/ModsPreferences/ModsSettings"]
++layout_mode = 2
++text = "Mods Settings"
++horizontal_alignment = 1
++
++[node name="HSeparator" type="HSeparator" parent="Border/ColorRect/SettingsPages/ModsPreferences/ModsSettings"]
++layout_mode = 2
++
++[node name="ScrollContainer" type="ScrollContainer" parent="Border/ColorRect/SettingsPages/ModsPreferences/ModsSettings"]
++layout_mode = 2
++size_flags_vertical = 3
++horizontal_scroll_mode = 0
++
++[node name="ModsSettingsBlock" parent="Border/ColorRect/SettingsPages/ModsPreferences/ModsSettings/ScrollContainer" instance=ExtResource("23_ydt62")]
++layout_mode = 2
++
+ [node name="PageDebug" type="Control" parent="Border/ColorRect/SettingsPages"]
++visible = false
+ layout_mode = 2
+ 
+ [node name="VBoxContainer" type="VBoxContainer" parent="Border/ColorRect/SettingsPages/PageDebug"]

@@ -1,0 +1,92 @@
+[gd_scene load_steps=13 format=3 uid="uid://byxtu8pqf2h3w"]
+
+[ext_resource type="FontFile" uid="uid://cntue2fs2dixc" path="res://graphic/font/DuruSans-Regular.ttf" id="1_5qtyj"]
+[ext_resource type="Script" uid="uid://cx1s5ovn448i1" path="res://scenes/nav_specific/settings_blocks/mods_settings_block.gd" id="2_robmo"]
+[ext_resource type="PackedScene" uid="uid://di26rmp7udj17" path="res://scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.tscn" id="3_robmo"]
+
+[sub_resource type="Gradient" id="Gradient_fp3f3"]
+offsets = PackedFloat32Array(0.657459, 0.701657)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_x65ju"]
+gradient = SubResource("Gradient_fp3f3")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_lr55t"]
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_28anm"]
+gradient = SubResource("Gradient_lr55t")
+width = 2
+height = 8
+fill_to = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pq5be"]
+bg_color = Color(0.894118, 0.894118, 0.894118, 0.552941)
+corner_radius_top_left = 2
+corner_radius_bottom_left = 2
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ayhdi"]
+bg_color = Color(1, 1, 1, 0.87451)
+corner_radius_top_left = 2
+corner_radius_bottom_left = 2
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nlj87"]
+bg_color = Color(0.344076, 0.344076, 0.344076, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6iyit"]
+bg_color = Color(0.190762, 0.190762, 0.190762, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="Theme" id="Theme_k0yo7"]
+CheckButton/fonts/font = ExtResource("1_5qtyj")
+HSlider/icons/grabber = SubResource("GradientTexture2D_x65ju")
+HSlider/icons/tick = SubResource("GradientTexture2D_28anm")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_pq5be")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_ayhdi")
+HSlider/styles/slider = SubResource("StyleBoxFlat_nlj87")
+Label/fonts/font = ExtResource("1_5qtyj")
+TooltipLabel/font_sizes/font_size = 16
+TooltipLabel/fonts/font = ExtResource("1_5qtyj")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_6iyit")
+
+[node name="ModsSettingsBlock" type="VBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = SubResource("Theme_k0yo7")
+script = ExtResource("2_robmo")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RetakeModSettingsBlock" parent="VBoxContainer" instance=ExtResource("3_robmo")]
+layout_mode = 2
