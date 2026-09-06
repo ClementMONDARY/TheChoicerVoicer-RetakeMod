@@ -1,8 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://byxtu8pqf2h3w"]
+[gd_scene load_steps=12 format=3 uid="uid://nao7v6wq8dwu"]
 
 [ext_resource type="FontFile" uid="uid://cntue2fs2dixc" path="res://graphic/font/DuruSans-Regular.ttf" id="1_5qtyj"]
 [ext_resource type="Script" uid="uid://cx1s5ovn448i1" path="res://scenes/nav_specific/settings_blocks/mods_settings_block.gd" id="2_robmo"]
-[ext_resource type="PackedScene" uid="uid://di26rmp7udj17" path="res://scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.tscn" id="3_robmo"]
 
 [sub_resource type="Gradient" id="Gradient_fp3f3"]
 offsets = PackedFloat32Array(0.657459, 0.701657)
@@ -84,9 +83,7 @@ offset_bottom = 40.0
 theme = SubResource("Theme_k0yo7")
 script = ExtResource("2_robmo")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ModBlocks" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
-
-[node name="RetakeModSettingsBlock" parent="VBoxContainer" instance=ExtResource("3_robmo")]
-layout_mode = 2

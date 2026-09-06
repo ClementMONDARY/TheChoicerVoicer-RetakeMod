@@ -89,9 +89,24 @@ NODE_PATH_RE = re.compile(r'(\$%?[A-Za-z_]\w*)((?:\s*/\s*%?[A-Za-z_]\w*)+)')
 
 # A marker that only exists once this mod has been applied, so a second run
 # against an already-patched project (or the wrong exe) fails clearly instead
-# of silently re-patching or corrupting something.
-MARKER_FILE = Path("scenes/nav_specific/settings_blocks/mods_settings_block.gd")
-MARKER_TEXT = "Profile.dub_mode_replay_mod_enabled"
+# of silently re-patching or corrupting something. It has to name a file this
+# mod alone writes: the Mods page itself is shared, so any mod may have put it
+# there, and testing that would refuse installs that are perfectly fine.
+MARKER_FILE = Path("scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd")
+MARKER_TEXT = "RetakeModSettings"
+
+# Shared mod layer: the Settings -> Mods page and the preference store every mod
+# writes into. Whichever mod is installed first lays it down; the ones after read
+# this version to decide between leaving it alone and replacing it with a newer one.
+SHARED_VERSION_FILE = Path("common/data/mod_settings.gd")
+SHARED_VERSION_RE = re.compile(r"const\s+SHARED_VERSION\s*:\s*int\s*=\s*(\d+)")
+
+# Patches that install that shared layer rather than this mod's own feature.
+# Another mod may have applied them already, and applying them twice would give
+# the settings menu two Mods tabs, so each one carries a sentinel that says so.
+SHARED_PATCH_SENTINELS = {
+    "scene__menu__settings__menu_settings_cleaner.tscn.patch": 'name="ModsPreferences"',
+}
 
 LOG_PATH = HERE / "install_log.txt"
 
@@ -790,15 +805,21 @@ def patch_variants_for(version: str) -> list[tuple[str, list[Path]]]:
 def apply_patch_set(work: Path, patches: list[Path], version: str) -> int:
     snapshot: dict[Path, str] = {}
     try:
+        applied = 0
         for patch in patches:
             rel = patch.name[: -len(".patch")].replace("__", "/")
             target = work / rel
             if not target.is_file():
                 raise Failed(f"expected game file missing: {rel}")
+            sentinel = SHARED_PATCH_SENTINELS.get(patch.name)
+            if sentinel and sentinel in read_text(target):
+                say("skip", f"{rel} already carries the shared Mods page")
+                continue
             if target not in snapshot:
                 snapshot[target] = read_text(target)
             apply_patch(target, read_text(patch), version)
-        return len(patches)
+            applied += 1
+        return applied
     except Failed:
         for target, original in snapshot.items():
             write_text(target, original)
@@ -813,24 +834,61 @@ NEW_FILES = [
     "addons/godot-easy-icons/icons/@icons/microphone_mute.svg",
     "addons/godot-easy-icons/icons/@icons/speaker.svg",
     "addons/godot-easy-icons/icons/streamline/screen-1.svg",
+    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd",
+    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.tscn",
+]
+
+# The shared layer, written only when this download carries a version at least as
+# new as whatever is already installed. Dropping a settings block into the mods
+# folder above is all a mod has to do to appear on the page: the page scans that
+# folder at runtime, so no installer ever edits a file another installer owns.
+SHARED_FILES = [
+    "common/data/mod_settings.gd",
+    "common/data/mod_settings.gd.uid",
     "scenes/nav_specific/settings_blocks/mods_settings_block.gd",
     "scenes/nav_specific/settings_blocks/mods_settings_block.gd.uid",
     "scenes/nav_specific/settings_blocks/mods_settings_block.tscn",
 ]
 
 
-def copy_new_files(work: Path) -> None:
-    for rel in NEW_FILES:
+def _shared_version(path: Path) -> int:
+    """Version of the shared mod layer at path, -1 when there is none there."""
+    if not path.is_file():
+        return -1
+    match = SHARED_VERSION_RE.search(read_text(path))
+    return int(match.group(1)) if match else 0
+
+
+def _copy_from_mod(work: Path, relatives: list[str]) -> None:
+    for rel in relatives:
         src = MOD / rel
         if not src.is_file():
             raise Failed(f"mod/{rel} is missing -- the download is incomplete")
         dst = work / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
+
+
+def copy_new_files(work: Path) -> None:
+    _copy_from_mod(work, NEW_FILES)
     say("mod", f"added {len(NEW_FILES)} new files (settings UI, icons)")
+
+
+def copy_shared_files(work: Path) -> None:
+    installed = _shared_version(work / SHARED_VERSION_FILE)
+    shipped = _shared_version(MOD / SHARED_VERSION_FILE)
+    if installed > shipped:
+        say("skip", f"another mod already installed a newer shared mod layer "
+                    f"(v{installed} against the v{shipped} in this download)")
+        return
+    _copy_from_mod(work, SHARED_FILES)
+    if installed < 0:
+        say("mod", f"added the shared mod layer v{shipped} (Settings -> Mods page)")
+    else:
+        say("mod", f"shared mod layer updated from v{installed} to v{shipped}")
 
 
 def apply_mod(work: Path) -> None:
@@ -870,6 +928,7 @@ def apply_mod(work: Path) -> None:
               "  enough for the mod to be updated for this build."
         )
 
+    copy_shared_files(work)
     copy_new_files(work)
     shutil.copy2(MOD / "export_presets.cfg", work / "export_presets.cfg")
     say("mod", "registered the export preset")
