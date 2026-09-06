@@ -24,39 +24,56 @@ func _apply_invert_display(inverted: bool) -> void :
 	icon_mixin_right.texture = _icon_backing if inverted else _icon_voicelines
 
 
-func _set_from_profile() -> void :
-	chk_enable_retake_mod.button_pressed = Profile.dub_mode_replay_mod_enabled
-	chk_enable_default_mic_on_replay.button_pressed = Profile.dub_mode_default_mic_on_replay
-	slider_tracks_mixin_default.value = Profile.dub_mode_default_tracks_mixin
-	chk_invert_mixin_slider.button_pressed = Profile.dub_mode_invert_tracks_mixin_display
-	_apply_invert_display(Profile.dub_mode_invert_tracks_mixin_display)
+func _apply_enabled_display(toggled_on: bool) -> void :
+	chk_enable_default_mic_on_replay.disabled = not toggled_on
+	slider_tracks_mixin_default.editable = toggled_on
+	chk_invert_mixin_slider.disabled = not toggled_on
+
+
+func _set_from_settings() -> void :
+	var is_enabled: bool = RetakeModSettings.enabled()
+	var inverted: bool = RetakeModSettings.invert_tracks_mixin_display()
+	chk_enable_retake_mod.set_pressed_no_signal(is_enabled)
+	chk_enable_default_mic_on_replay.set_pressed_no_signal(RetakeModSettings.default_mic_on_replay())
+	slider_tracks_mixin_default.set_value_no_signal(RetakeModSettings.default_tracks_mixin())
+	chk_invert_mixin_slider.set_pressed_no_signal(inverted)
+	_apply_invert_display(inverted)
+	_apply_enabled_display(is_enabled)
 
 
 func _on_reset_values() -> void :
-	Profile.dub_mode_replay_mod_enabled = true
-	Profile.dub_mode_default_mic_on_replay = false
-	Profile.dub_mode_default_tracks_mixin = 100.0
-	Profile.dub_mode_invert_tracks_mixin_display = false
-	_set_from_profile()
+	RetakeModSettings.reset()
+	_set_from_settings()
+
+
+func _on_default_mic_on_replay_toggled(toggled_on: bool) -> void :
+	RetakeModSettings.set_default_mic_on_replay(toggled_on)
+
+
+func _on_tracks_mixin_changed(value: float) -> void :
+	RetakeModSettings.set_default_tracks_mixin(value)
+
+
+func _on_invert_mixin_toggled(toggled_on: bool) -> void :
+	RetakeModSettings.set_invert_tracks_mixin_display(toggled_on)
+	_apply_invert_display(toggled_on)
 
 
 func _connect_signals() -> void :
-	chk_enable_retake_mod.toggled.connect(Profile._set_dub_mode_replay_mod_enabled)
-	chk_enable_default_mic_on_replay.toggled.connect(Profile._set_dub_mode_default_mic_on_replay)
-	slider_tracks_mixin_default.value_changed.connect(Profile._set_dub_mode_default_tracks_mixin)
-	chk_invert_mixin_slider.toggled.connect(Profile._set_dub_mode_invert_tracks_mixin_display)
-	chk_invert_mixin_slider.toggled.connect(_apply_invert_display)
+	chk_enable_default_mic_on_replay.toggled.connect(_on_default_mic_on_replay_toggled)
+	slider_tracks_mixin_default.value_changed.connect(_on_tracks_mixin_changed)
+	chk_invert_mixin_slider.toggled.connect(_on_invert_mixin_toggled)
 	btn_reset_values.pressed.connect(_on_reset_values)
 
 
 func _ready() -> void :
 	_icon_backing = icon_mixin_left.texture
 	_icon_voicelines = icon_mixin_right.texture
-	_set_from_profile()
+	_set_from_settings()
 	_connect_signals()
 
 
+# Wired from the scene file, so it stays the single handler for the master toggle.
 func _on_chk_enable_retake_mod_toggled(toggled_on: bool) -> void:
-	chk_enable_default_mic_on_replay.disabled = not toggled_on
-	slider_tracks_mixin_default.editable = toggled_on
-	chk_invert_mixin_slider.disabled = not toggled_on
+	RetakeModSettings.set_enabled(toggled_on)
+	_apply_enabled_display(toggled_on)
