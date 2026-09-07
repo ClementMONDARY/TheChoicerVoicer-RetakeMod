@@ -38,16 +38,6 @@ import install_mod as m  # noqa: E402  (needs sys.path set up first)
 
 DEFAULT_OTHER_MOD = "https://github.com/TypeOneAppolo/tcv-multiplayer-mod"
 
-# Every file *this* mod's own patches touch -- if a future patch touches a new
-# file, add it here too.
-OUR_PATCH_TARGETS = [
-    "common/globals/profile.gd",
-    "scene/menu/settings/menu_settings_cleaner.tscn",
-    "scenes/gameplay/dub_mode/main/dub_mode.gd",
-    "scenes/gameplay/dub_mode/main/dub_mode.tscn",
-]
-
-
 def fetch_other_mod(spec: str, cache: Path) -> Path:
     """A local path is used as-is. Anything else is treated as a git URL and
     shallow-cloned into the cache (re-used on a later run)."""
@@ -99,6 +89,12 @@ def apply_set(work: Path, patches: list[Path], label: str) -> None:
         if not target.is_file():
             raise m.Failed(f"{label}: expects {rel}, which isn't in your vanilla copy "
                            "-- wrong game version?")
+        # Mirror the installer: a patch that lays down the shared Mods page is skipped
+        # when it is already there. Without this the second mod stacks a duplicate and
+        # the check reports a clean pass on a project the installer would build right.
+        sentinel = m.SHARED_PATCH_SENTINELS.get(patch.name)
+        if sentinel and sentinel in m.read_text(target):
+            continue
         m.apply_patch(target, m.read_text(patch), label)
 
 

@@ -826,16 +826,23 @@ def apply_patch_set(work: Path, patches: list[Path], version: str) -> int:
         raise
 
 
-# New whole files this mod adds: settings-page scenes/scripts and their icons.
-# Copied wholesale rather than patched in, same as the multiplayer mod's own
-# net/*.gd -- these paths simply don't exist yet in a vanilla decompile.
+# New whole files this mod adds: the feature itself, its preferences and the settings
+# block that drives them, plus the icons they use. Copied wholesale rather than patched
+# in, same as the multiplayer mod's own net/*.gd -- these paths simply don't exist yet
+# in a vanilla decompile.
+#
+# retake_mod.gd is where the whole feature lives. It rides on a node the scene patch
+# adds to dub_mode.tscn and reaches the game through that node's owner, so no game
+# script is patched at all -- which is what lets this stack with mods that patch
+# dub_mode.gd themselves.
 NEW_FILES = [
     "addons/godot-easy-icons/icons/@icons/microphone.svg",
-    "addons/godot-easy-icons/icons/@icons/microphone_mute.svg",
     "addons/godot-easy-icons/icons/@icons/speaker.svg",
     "addons/godot-easy-icons/icons/streamline/screen-1.svg",
-    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd",
-    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd.uid",
+    "scenes/gameplay/dub_mode/main/retake_mod.gd",
+    "scenes/gameplay/dub_mode/main/retake_mod.gd.uid",
+    "scenes/gameplay/dub_mode/main/retake_mod_settings.gd",
+    "scenes/gameplay/dub_mode/main/retake_mod_settings.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.tscn",
@@ -874,7 +881,7 @@ def _copy_from_mod(work: Path, relatives: list[str]) -> None:
 
 def copy_new_files(work: Path) -> None:
     _copy_from_mod(work, NEW_FILES)
-    say("mod", f"added {len(NEW_FILES)} new files (settings UI, icons)")
+    say("mod", f"added {len(NEW_FILES)} new files (feature, settings UI, icons)")
 
 
 LOAD_STEPS_RE = re.compile(r"^(\[gd_scene\b[^\]]*?\bload_steps=)(\d+)", re.MULTILINE)

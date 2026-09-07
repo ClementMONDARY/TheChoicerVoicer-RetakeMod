@@ -1,16 +1,20 @@
-@@ -21,3 +21,6 @@
+@@ -21,1 +21,2 @@
  [ext_resource type="Texture2D" uid="uid://brshc1xninagf" path="res://graphic/gradient/black_double_border.tres" id="18_e64u5"]
-+[ext_resource type="Texture2D" uid="uid://baeicuw6syt0x" path="res://addons/godot-easy-icons/icons/@icons/microphone.svg" id="18_guhls"]
++[ext_resource type="Texture2D" path="res://addons/godot-easy-icons/icons/@icons/microphone.svg" id="18_guhls"]
+@@ -22,1 +23,3 @@
  [ext_resource type="PackedScene" uid="uid://wveg1kxnf822" path="res://scenes/nav_specific/settings_blocks/dub_options_settings_block.tscn" id="19_cocs2"]
-+[ext_resource type="Texture2D" uid="uid://b01aacla78t8y" path="res://addons/godot-easy-icons/icons/streamline/screen-1.svg" id="19_n2gmy"]
-+[ext_resource type="Texture2D" uid="uid://cqovavdmwt48c" path="res://addons/godot-easy-icons/icons/@icons/speaker.svg" id="20_6a6y1"]
- [ext_resource type="PackedScene" uid="uid://b8m0cl2cdi7cl" path="res://scenes/nav_specific/settings_blocks/display_settings_block.tscn" id="20_cocs2"]
-@@ -1667,2 +1670,43 @@
++[ext_resource type="Texture2D" path="res://addons/godot-easy-icons/icons/streamline/screen-1.svg" id="19_n2gmy"]
++[ext_resource type="Texture2D" path="res://addons/godot-easy-icons/icons/@icons/speaker.svg" id="20_6a6y1"]
+@@ -27,1 +30,2 @@
+ [ext_resource type="PackedScene" uid="uid://7xc3d3hlnbif" path="res://scenes/nav_specific/settings_blocks/mic_crust_settings_block.tscn" id="23_6a6y1"]
++[ext_resource type="Script" path="res://scenes/gameplay/dub_mode/main/retake_mod.gd" id="24_rtkmod"]
+@@ -1667,2 +1671,44 @@ vertical_alignment = 1
  
 +[node name="ReplaySettings" type="HBoxContainer" parent="Visuals/Remote/MarginContainer/RemoteButtons"]
 +unique_name_in_owner = true
 +layout_mode = 2
 +size_flags_vertical = 4
++script = ExtResource("24_rtkmod")
 +
 +[node name="ChkMicReplay" type="CheckBox" parent="Visuals/Remote/MarginContainer/RemoteButtons/ReplaySettings"]
 +unique_name_in_owner = true
@@ -49,8 +53,3 @@
 +expand_mode = 1
 +
  [node name="BtnRecord" parent="Visuals/Remote/MarginContainer/RemoteButtons" instance=ExtResource("5_rb6rr")]
-@@ -2391,2 +2435,4 @@
- [connection signal="button_clicked" from="Visuals/Remote/MarginContainer/RemoteButtons/BtnStopListening" to="." method="_end_again"]
-+[connection signal="toggled" from="Visuals/Remote/MarginContainer/RemoteButtons/ReplaySettings/ChkMicReplay" to="." method="_apply_replay_mix"]
-+[connection signal="value_changed" from="Visuals/Remote/MarginContainer/RemoteButtons/ReplaySettings/HBoxContainer/TracksMixinSlider" to="." method="_apply_replay_mix"]
- [connection signal="button_clicked" from="Visuals/Remote/MarginContainer/RemoteButtons/BtnRecord" to="." method="_enact"]

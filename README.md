@@ -66,20 +66,37 @@ rebuilding the exe, which is what the installer does.
 
 `install_mod.py` downloads [gdRE](https://github.com/GDRETools/gdsdecomp) and
 decompiles your copy, applies the patches under `mod/patches/` (small,
-line-anchored diffs against the game's own scripts and scenes) and drops in
-the handful of new files under `mod/` (the Settings -> Mods page and its
-icons), then downloads the matching [Godot](https://godotengine.org) and
+line-anchored diffs against the game's own scenes) and drops in the new files
+under `mod/` (the feature itself, its preferences and the Settings -> Mods
+page), then downloads the matching [Godot](https://godotengine.org) and
 re-exports. Which Godot it grabs is worked out from the decompiled project
 rather than fixed, the same way the multiplayer mod's installer does it.
 
 What's in `mod/`:
 
 ```
-mod/patches/v0_5_3/*.patch     edits to the game's own scripts/scenes
-mod/scenes/...                 the new Settings -> Mods -> Retake page
-mod/addons/...                 icons used by that page
+mod/patches/v0_5_3/*.patch     edits to the game's own scenes
+mod/scenes/gameplay/...        the feature itself, and its preferences
+mod/scenes/nav_specific/...    the Settings -> Mods -> Retake page
+mod/addons/...                 icons used by both
 mod/export_presets.cfg         the Windows and Linux export presets
 ```
+
+### living beside other mods
+
+**No game script is patched.** The whole feature lives in `retake_mod.gd`,
+which rides on a single node the scene patch adds to `dub_mode.tscn` and
+reaches the game through that node's owner - rewiring the buttons it needs at
+runtime rather than editing the code behind them. So the mod's entire
+footprint on the game is two scene files, and neither is one the online
+multiplayer mod touches (it patches seven scripts, `dub_mode.gd` among them).
+
+The Settings -> Mods page is shared ground rather than this mod's own: it
+scans a folder at startup, so a mod appears there by dropping one scene into
+it, and no two installers ever edit the same line. Preferences go to
+`user://mod_settings.cfg` under a section named after the mod, never into the
+game's own profile. `tests/check_mod_compat.py` replays another mod's patches
+and then this one's on top, to catch a clash before a player does.
 
 If a future game update moves these files around, the installer prints the
 lines it expected next to what's actually there and stops rather than
