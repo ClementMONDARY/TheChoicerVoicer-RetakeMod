@@ -1,7 +1,3 @@
-@@ -1,2 +1,2 @@
--[gd_scene load_steps=95 format=3 uid="uid://m5vtffuqyaqw"]
-+[gd_scene load_steps=98 format=3 uid="uid://m5vtffuqyaqw"]
- 
 @@ -21,3 +21,6 @@
  [ext_resource type="Texture2D" uid="uid://brshc1xninagf" path="res://graphic/gradient/black_double_border.tres" id="18_e64u5"]
 +[ext_resource type="Texture2D" uid="uid://baeicuw6syt0x" path="res://addons/godot-easy-icons/icons/@icons/microphone.svg" id="18_guhls"]

@@ -877,6 +877,34 @@ def copy_new_files(work: Path) -> None:
     say("mod", f"added {len(NEW_FILES)} new files (settings UI, icons)")
 
 
+LOAD_STEPS_RE = re.compile(r"^(\[gd_scene\b[^\]]*?\bload_steps=)(\d+)", re.MULTILINE)
+RESOURCE_HEADER_RE = re.compile(r"^\[(?:ext|sub)_resource\b", re.MULTILINE)
+
+
+def refresh_load_steps(work: Path, patches: list[Path]) -> int:
+    """Recompute the load_steps header of every scene this mod patched.
+
+    Godot writes that number as (ext_resource + sub_resource) + 1. A patch
+    carrying a hard-coded count only ever fits the first mod installed: the next
+    one stacking its own resources into the same scene would find a number it
+    does not expect and refuse to apply. Recomputing it here keeps that one
+    shared line out of every mod's patches.
+    """
+    fixed = 0
+    for patch in patches:
+        rel = patch.name[: -len(".patch")].replace("__", "/")
+        target = work / rel
+        if not rel.endswith(".tscn") or not target.is_file():
+            continue
+        text = read_text(target)
+        count = len(RESOURCE_HEADER_RE.findall(text)) + 1
+        updated, hits = LOAD_STEPS_RE.subn(lambda m: f"{m.group(1)}{count}", text, count=1)
+        if hits and updated != text:
+            write_text(target, updated)
+            fixed += 1
+    return fixed
+
+
 def copy_shared_files(work: Path) -> None:
     installed = _shared_version(work / SHARED_VERSION_FILE)
     shipped = _shared_version(MOD / SHARED_VERSION_FILE)
@@ -916,6 +944,7 @@ def apply_mod(work: Path) -> None:
         if len(variants) > 1:
             say("mod", f"patch set {label} fits this build")
         say("mod", f"patched {count} game files")
+        say("mod", f"recomputed load_steps in {refresh_load_steps(work, patches)} scenes")
         applied = True
         break
 
