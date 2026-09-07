@@ -1,2 +1,5 @@
 __pycache__/
 .cache/
+work/
+install_log.txt
+*.exe

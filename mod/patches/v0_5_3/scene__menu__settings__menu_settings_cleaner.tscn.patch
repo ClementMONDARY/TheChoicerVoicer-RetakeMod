@@ -1,7 +1,3 @@
-@@ -1,2 +1,2 @@
--[gd_scene load_steps=42 format=3 uid="uid://c6xuipdb7njpw"]
-+[gd_scene load_steps=44 format=3 uid="uid://c6xuipdb7njpw"]
- 
 @@ -25,2 +25,3 @@
  [ext_resource type="PackedScene" uid="uid://d4e3weu14db0p" path="res://scenes/nav_specific/settings_blocks/debug_settings_block.tscn" id="23_06o3a"]
 +[ext_resource type="PackedScene" path="res://scenes/nav_specific/settings_blocks/mods_settings_block.tscn" id="23_ydt62"]

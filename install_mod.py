@@ -826,16 +826,23 @@ def apply_patch_set(work: Path, patches: list[Path], version: str) -> int:
         raise
 
 
-# New whole files this mod adds: settings-page scenes/scripts and their icons.
-# Copied wholesale rather than patched in, same as the multiplayer mod's own
-# net/*.gd -- these paths simply don't exist yet in a vanilla decompile.
+# New whole files this mod adds: the feature itself, its preferences and the settings
+# block that drives them, plus the icons they use. Copied wholesale rather than patched
+# in, same as the multiplayer mod's own net/*.gd -- these paths simply don't exist yet
+# in a vanilla decompile.
+#
+# retake_mod.gd is where the whole feature lives. It rides on a node the scene patch
+# adds to dub_mode.tscn and reaches the game through that node's owner, so no game
+# script is patched at all -- which is what lets this stack with mods that patch
+# dub_mode.gd themselves.
 NEW_FILES = [
     "addons/godot-easy-icons/icons/@icons/microphone.svg",
-    "addons/godot-easy-icons/icons/@icons/microphone_mute.svg",
     "addons/godot-easy-icons/icons/@icons/speaker.svg",
     "addons/godot-easy-icons/icons/streamline/screen-1.svg",
-    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd",
-    "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings.gd.uid",
+    "scenes/gameplay/dub_mode/main/retake_mod.gd",
+    "scenes/gameplay/dub_mode/main/retake_mod.gd.uid",
+    "scenes/gameplay/dub_mode/main/retake_mod_settings.gd",
+    "scenes/gameplay/dub_mode/main/retake_mod_settings.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.gd.uid",
     "scenes/nav_specific/settings_blocks/micro_blocks/mods/retake_mod_settings_block.tscn",
@@ -874,7 +881,35 @@ def _copy_from_mod(work: Path, relatives: list[str]) -> None:
 
 def copy_new_files(work: Path) -> None:
     _copy_from_mod(work, NEW_FILES)
-    say("mod", f"added {len(NEW_FILES)} new files (settings UI, icons)")
+    say("mod", f"added {len(NEW_FILES)} new files (feature, settings UI, icons)")
+
+
+LOAD_STEPS_RE = re.compile(r"^(\[gd_scene\b[^\]]*?\bload_steps=)(\d+)", re.MULTILINE)
+RESOURCE_HEADER_RE = re.compile(r"^\[(?:ext|sub)_resource\b", re.MULTILINE)
+
+
+def refresh_load_steps(work: Path, patches: list[Path]) -> int:
+    """Recompute the load_steps header of every scene this mod patched.
+
+    Godot writes that number as (ext_resource + sub_resource) + 1. A patch
+    carrying a hard-coded count only ever fits the first mod installed: the next
+    one stacking its own resources into the same scene would find a number it
+    does not expect and refuse to apply. Recomputing it here keeps that one
+    shared line out of every mod's patches.
+    """
+    fixed = 0
+    for patch in patches:
+        rel = patch.name[: -len(".patch")].replace("__", "/")
+        target = work / rel
+        if not rel.endswith(".tscn") or not target.is_file():
+            continue
+        text = read_text(target)
+        count = len(RESOURCE_HEADER_RE.findall(text)) + 1
+        updated, hits = LOAD_STEPS_RE.subn(lambda m: f"{m.group(1)}{count}", text, count=1)
+        if hits and updated != text:
+            write_text(target, updated)
+            fixed += 1
+    return fixed
 
 
 def copy_shared_files(work: Path) -> None:
@@ -916,6 +951,7 @@ def apply_mod(work: Path) -> None:
         if len(variants) > 1:
             say("mod", f"patch set {label} fits this build")
         say("mod", f"patched {count} game files")
+        say("mod", f"recomputed load_steps in {refresh_load_steps(work, patches)} scenes")
         applied = True
         break
 
