@@ -30,6 +30,7 @@ var _icon_voicelines: Texture2D
 
 var _last_seen_clip_index: int = -1
 var _watching_for_replay_end: bool = false
+var _inputs_locked: bool = false
 
 
 
@@ -69,6 +70,10 @@ func _process(_delta: float) -> void :
 		_watching_for_replay_end = false
 		if player_backing_track.playing: player_backing_track.stop()
 
+	var revealing: bool = audio_interface.state == AudioInterfaceManagerBufferless.INTERFACE_STATE.FIRST
+	var settling: bool = !audio_interface.playbar.visible or dub_mode.video_player_static.visible
+	_lock_inputs(revealing or settling)
+
 
 
 
@@ -77,6 +82,14 @@ func _apply_settings_display() -> void :
 	var inverted: bool = RetakeModSettings.invert_tracks_mixin_display()
 	icon_mixin_left.texture = _icon_voicelines if inverted else _icon_backing
 	icon_mixin_right.texture = _icon_backing if inverted else _icon_voicelines
+
+
+func _lock_inputs(locked: bool) -> void :
+	if locked == _inputs_locked: return
+	_inputs_locked = locked
+	chk_mic_replay.disabled = locked
+	slider_tracks_mixin.editable = !locked
+	modulate.a = 0.5 if locked else 1.0
 
 
 func _reset_controls_to_defaults() -> void :
